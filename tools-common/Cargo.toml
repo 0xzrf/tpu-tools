@@ -2,10 +2,10 @@
 name = "tools-common"
 version = { workspace = true }
 authors = { workspace = true }
-repository = { workspace = true }
-homepage = { workspace = true }
-license = { workspace = true }
 edition = { workspace = true }
+homepage = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
@@ -14,7 +14,7 @@ targets = ["x86_64-unknown-linux-gnu"]
 async-stream = { workspace = true }
 async-trait = { workspace = true }
 chrono = { workspace = true }
-clap = { workspace = true, features = ["derive", "cargo"] }
+clap = { workspace = true, features = ["cargo", "derive"] }
 futures = { workspace = true }
 log = { workspace = true }
 serde = { workspace = true }
@@ -35,7 +35,11 @@ solana-sdk-ids = { workspace = true }
 solana-signer = { workspace = true }
 solana-system-interface = { workspace = true }
 solana-tpu-client = { workspace = true }
-solana-tpu-client-next = { workspace = true, features = ["metrics", "agave-unstable-api", "websocket-node-address-service"] }
+solana-tpu-client-next = { workspace = true, features = [
+  "agave-unstable-api",
+  "metrics",
+  "websocket-node-address-service"
+] }
 thiserror = { workspace = true }
 tokio = { workspace = true }
 tokio-util = { workspace = true }
@@ -46,6 +50,7 @@ tpu-client-next-extensions = { workspace = true }
 rand = { workspace = true }
 solana-sha256-hasher = { workspace = true }
 wincode = { workspace = true }
+bincode = { workspace = true }
 
 [lints]
 workspace = true
