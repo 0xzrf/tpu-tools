@@ -31,9 +31,10 @@ use {
 
 /// How many transactions send concurrently.
 const MAX_RPC_SEND_TX_BATCH: usize = 64;
+/// Max `create_account` instructions packed into one transaction (packet size limit).
+const MAX_CREATE_ACC_IX_PER_TX: usize = 6;
 /// Used to sleep between accounts creation to avoid getting 429s from RPC.
 const ACCOUNT_CREATION_SLEEP_INTERVAL: Duration = Duration::from_millis(150);
-const MAX_CREATE_ACC_IX_PER_TX: usize = 6;
 /// Max number of unsuccessful create accounts attempts.
 /// The total time waiting for successful account creation is
 /// `MAX_CONTINUOUS_FAILED_ATTEMPTS*ACCOUNT_CREATION_SLEEP_INTERVAL`
