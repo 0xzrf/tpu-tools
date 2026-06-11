@@ -76,8 +76,8 @@ pub async fn delete_file_persisted_accounts(
 
     if deleted_accounts != num_accounts_with_balance {
         error!(
-            "Failed to delete all funded payers: {}/{} deleted",
-            deleted_accounts, num_accounts_with_balance
+            "Failed to delete all funded payers: {deleted_accounts}/{num_accounts_with_balance} \
+             deleted"
         );
         return Err(Error::DeleteAccountFailure);
     }
