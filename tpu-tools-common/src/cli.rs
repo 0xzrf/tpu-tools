@@ -9,6 +9,7 @@ use {
         input_parsers::parse_url_or_moniker, input_validators::normalize_to_url_if_moniker,
     },
     solana_native_token::LAMPORTS_PER_SOL,
+    solana_pubkey::Pubkey,
     std::{net::SocketAddr, path::PathBuf},
     tokio::time::Duration,
 };
@@ -86,6 +87,17 @@ pub struct WriteAccounts {
 pub struct ReadAccounts {
     #[clap(long, help = "File to read the accounts from.")]
     pub accounts_file: PathBuf,
+}
+
+/// Parameters for draining payer accounts from a file.
+#[derive(Args, Debug, PartialEq, Eq, Clone)]
+#[clap(rename_all = "kebab-case")]
+pub struct DeleteAccounts {
+    #[clap(long, help = "File to read the accounts from.")]
+    pub accounts_file: PathBuf,
+
+    #[clap(long, help = "Account that receives all drained lamports.")]
+    pub recipient: Pubkey,
 }
 
 /// Parses an RPC URL or Solana moniker and normalizes monikers to URLs.

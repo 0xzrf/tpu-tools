@@ -40,6 +40,14 @@ DURATION=600
 $TOOL -ut --authority $FUNDER --validate-accounts read-accounts-run  --accounts-file accounts.json --staked-identity-file $IDENTITY --send-interval 50 --duration $DURATION --compute-unit-price 10 --yellowstone-url "http://api.testnet.solana.com" --send-fanout $FANOUT  --output-csv-file out.csv yellowstone-leader-tracker "http://api.testnet.solana.com"  2> err.txt
 ```
 
+To drain the saved payer accounts after testing, use `delete-accounts`. The tool reads the same
+`accounts.json` format produced by `write-accounts`; `--authority` pays transaction fees, and
+`--recipient` receives the payer balances.
+
+```rust
+solana-rate-latency-tool -ut --authority "funder.json" delete-accounts --accounts-file accounts.json --recipient "$RECIPIENT_PUBKEY"
+```
+
 ### How to analyze the results
 
 The result of the execution is file specified by `--output-csv-file`. This file has csv format and might be analyzed elsewhere.

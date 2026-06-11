@@ -3,8 +3,8 @@ use {
     solana_clap_v3_utils::input_parsers::parse_url,
     solana_commitment_config::CommitmentConfig,
     solana_tpu_tools_common::cli::{
-        AccountParams, LeaderTracker, ReadAccounts, WriteAccounts, parse_and_normalize_url,
-        parse_duration_ms, parse_duration_sec,
+        AccountParams, DeleteAccounts, LeaderTracker, ReadAccounts, WriteAccounts,
+        parse_and_normalize_url, parse_duration_ms, parse_duration_sec,
     },
     std::{net::SocketAddr, path::PathBuf},
     tokio::time::Duration,
@@ -77,6 +77,9 @@ pub enum Command {
 
     #[clap(about = "Create accounts and save them to a file, skipping the execution.")]
     WriteAccounts(WriteAccounts),
+
+    #[clap(about = "Transfer all lamports from account-file payers to a recipient.")]
+    DeleteAccounts(DeleteAccounts),
 }
 
 #[derive(Args, Clone, Debug, PartialEq, Eq)]
@@ -330,6 +333,42 @@ mod tests {
             command: Command::WriteAccounts(WriteAccounts {
                 accounts_file: accounts_file_name.into(),
                 account_params,
+            }),
+            authority: Some(PathBuf::from(&keypair_file_name)),
+            validate_accounts: false,
+        };
+        let cli = ClientCliParameters::try_parse_from(args);
+        assert!(cli.is_ok(), "Unexpected error {:?}", cli.err());
+        let actual = cli.unwrap();
+
+        assert_eq!(actual, expected_parameters);
+    }
+
+    #[test]
+    fn test_delete_accounts_command() {
+        let keypair_file_name = "/home/testUser/masterKey.json";
+        let accounts_file_name = "/home/testUser/accountsFile.json";
+        let recipient = solana_pubkey::Pubkey::new_unique();
+        let recipient_string = recipient.to_string();
+
+        let args = vec![
+            "test",
+            "-ul",
+            "--authority",
+            keypair_file_name,
+            "delete-accounts",
+            "--accounts-file",
+            accounts_file_name,
+            "--recipient",
+            &recipient_string,
+        ];
+
+        let expected_parameters = ClientCliParameters {
+            json_rpc_url: "http://localhost:8899".to_string(),
+            commitment_config: CommitmentConfig::confirmed(),
+            command: Command::DeleteAccounts(DeleteAccounts {
+                accounts_file: accounts_file_name.into(),
+                recipient,
             }),
             authority: Some(PathBuf::from(&keypair_file_name)),
             validate_accounts: false,

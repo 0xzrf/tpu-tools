@@ -11,8 +11,11 @@ use {
     solana_rpc_client::nonblocking::rpc_client::RpcClient,
     solana_signer::{EncodableKey, Signer},
     solana_tpu_client_next::SendTransactionStats,
-    solana_tpu_tools_common::accounts_file::{
-        create_ephemeral_accounts, create_file_persisted_accounts, read_accounts_file,
+    solana_tpu_tools_common::{
+        accounts_deleter::delete_file_persisted_accounts,
+        accounts_file::{
+            create_ephemeral_accounts, create_file_persisted_accounts, read_accounts_file,
+        },
     },
     std::{sync::Arc, time::Duration},
     tokio_util::sync::CancellationToken,
@@ -38,7 +41,8 @@ fn main() {
 
 #[tokio::main]
 async fn run(parameters: ClientCliParameters) -> Result<(), RateLatencyToolError> {
-    let authority = if let Some(authority_file) = parameters.authority {
+    let authority_provided = parameters.authority.is_some();
+    let authority = if let Some(authority_file) = parameters.authority.as_ref() {
         Keypair::read_from_file(authority_file)
             .map_err(|_err| RateLatencyToolError::KeypairReadFailure)?
     } else {
@@ -112,6 +116,20 @@ async fn run(parameters: ClientCliParameters) -> Result<(), RateLatencyToolError
                 write_accounts.account_params.num_payers,
                 write_accounts.account_params.payer_account_balance,
                 parameters.validate_accounts,
+            )
+            .await?;
+        }
+        Command::DeleteAccounts(delete_accounts) => {
+            if !authority_provided {
+                return Err(RateLatencyToolError::InvalidCliArguments(
+                    "`delete-accounts` requires --authority to pay transaction fees".to_string(),
+                ));
+            }
+            delete_file_persisted_accounts(
+                rpc_client.clone(),
+                authority,
+                delete_accounts.accounts_file,
+                delete_accounts.recipient,
             )
             .await?;
         }
